@@ -13,7 +13,8 @@ BASE = f'https://api.boomi.com/api/rest/v1/{ACCT}'
 H = {'Accept': 'application/json', 'Content-Type': 'application/json'}
 _u = os.environ['BOOMI_API_USER']
 AUTH = (_u if _u.startswith('BOOMI_TOKEN.') else 'BOOMI_TOKEN.' + _u, os.environ['BOOMI_API_TOKEN'])
-SECRET_WORDS = sorted({str(v) for v in IDS.values() if isinstance(v, str) and len(v) >= 6} | {_u.replace('BOOMI_TOKEN.', '')}, key=len, reverse=True)
+_OTHER = {os.environ.get(k, '') for k in ('FLOW_TENANT', 'FLOW_ID', 'BDI_ACCOUNT', 'BDI_ENV')}      # ids the other arms use
+SECRET_WORDS = sorted({str(v) for v in IDS.values() if isinstance(v, str) and len(v) >= 6} | {_u.replace('BOOMI_TOKEN.', '')} | {w for w in _OTHER if len(w) >= 6}, key=len, reverse=True)
 if os.environ.get('GITHUB_ACTIONS'):
     for _w in SECRET_WORDS: print(f'::add-mask::{_w}')
 

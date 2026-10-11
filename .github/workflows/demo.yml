@@ -8,7 +8,7 @@ on:
       arm:
         description: Which part of the Boomi platform to exercise
         type: choice
-        options: [integration, edi]
+        options: [integration, edi, flow, apim, bdi]
         default: integration
       run_id:
         description: The id kumori.ai gave this run (leave empty when starting by hand)
@@ -34,13 +34,18 @@ jobs:
       BOOMI_API_TOKEN: ${{ secrets.BOOMI_API_TOKEN }}     # a test-only Boomi account; it holds no production data
       BOOMI_IDS: ${{ secrets.BOOMI_IDS }}
       KUMORI_API_KEY: ${{ secrets.KUMORI_API_KEY }}       # may only post this demo's progress events
+      FLOW_TENANT: ${{ secrets.FLOW_TENANT }}             # a public Flow app: no key, only where it lives
+      FLOW_ID: ${{ secrets.FLOW_ID }}
+      BDI_TOKEN: ${{ secrets.BDI_TOKEN }}                 # a trial Data Integration account holding public status data
+      BDI_ACCOUNT: ${{ secrets.BDI_ACCOUNT }}
+      BDI_ENV: ${{ secrets.BDI_ENV }}
       DEMO_ARM: ${{ inputs.arm }}
       DEMO_RUN_ID: ${{ inputs.run_id }}
     steps:
       - uses: actions/checkout@v4
       - name: Check the inputs
         run: |
-          case "$DEMO_ARM" in integration|edi) ;; *) echo "unknown arm"; exit 1 ;; esac
+          case "$DEMO_ARM" in integration|edi|flow|apim|bdi) ;; *) echo "unknown arm"; exit 1 ;; esac
           if [[ ! "$DEMO_RUN_ID" =~ ^[a-z0-9-]{0,40}$ ]]; then echo "bad run id"; exit 1; fi
           pip install -q requests
       - name: Run the arm
