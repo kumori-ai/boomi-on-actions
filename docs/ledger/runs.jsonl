@@ -1,0 +1,1 @@
+{"run_id":"manual-38098973796","arm":"integration","ok":false,"summary":"The job ended before the run could report (crashed or cancelled)","started":"2026-10-11T00:36:05Z","ended":"2026-10-11T00:36:05Z","seconds":null,"github_run_id":"38098973796","github_run_url":"https://github.com/kumori-ai/boomi-on-actions/actions/runs/38098973796","steps":[]}
