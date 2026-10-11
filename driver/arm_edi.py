@@ -54,6 +54,8 @@ if __name__ == '__main__':
     ok = False
     try:
         ok = bool(main())
+    except Exception as e:
+        step('crashed', 'The script stopped on an error', 'failed', error=f'{type(e).__name__}: {e}'[:160])
     finally:
         finish(ok, 'A trading partner was created, read, found and deleted through the API' if ok else 'The run did not hold: see the failed step')
     sys.exit(0 if ok else 1)

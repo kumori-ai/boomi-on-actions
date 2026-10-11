@@ -16,6 +16,6 @@ row = json.loads(ROW_FILE.read_text()) if ROW_FILE.exists() else {
     'seconds': None, 'github_run_id': GH_RUN, 'github_run_url': RUN_URL, 'steps': []}
 ledger = pathlib.Path(__file__).resolve().parents[1] / 'docs' / 'ledger' / 'runs.jsonl'
 with ledger.open('a') as fh: fh.write(json.dumps(row, separators=(',', ':')) + '\n')
-(pathlib.Path(os.environ.get('RUNNER_TEMP', '/tmp')) / 'commit_message').write_text(f"run {row['run_id']}: {ARM} {'passed' if row['ok'] else 'FAILED'} in {row['seconds']}s\n")
+(pathlib.Path(os.environ.get('RUNNER_TEMP', '/tmp')) / 'commit_message').write_text(f"run {row['run_id']}: {ARM} {'passed' if row['ok'] else 'FAILED'}{f" in {row['seconds']}s" if row['seconds'] else ''}\n")
 _post({'run_id': RUN_ID, 'arm': ARM, 'final': True, 'ok': row['ok'], 'summary': row['summary'], 'seconds': row['seconds'], 'github_run_id': GH_RUN, 'github_run_url': RUN_URL})
 print(f"ledger row written: {ARM} {'passed' if row['ok'] else 'FAILED'}")

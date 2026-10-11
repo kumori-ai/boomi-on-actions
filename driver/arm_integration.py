@@ -62,10 +62,10 @@ def main():
     e = run_process(IDS['process_keyless'], atom['id'], alive)
     good = e['status'] == 'COMPLETE' and (e.get('outbound_docs') or 0) >= 1
     step('process', 'Ran a deployed process on it: it fetched a public page and returned the document', 'done' if good else 'failed',
-         status=e['status'], boomi_duration_ms=e.get('duration_ms'), documents_out=e.get('outbound_docs'))
+         boomi_status=e['status'], boomi_duration_ms=e.get('duration_ms'), documents_out=e.get('outbound_docs'))
     f = run_process(IDS['process_failing'], atom['id'], alive)
     bad = f['status'] == 'ERROR'
-    step('canary', 'Ran a process built to fail: Boomi reported the error, so a pass means something', 'done' if bad else 'failed', status=f['status'])
+    step('canary', 'Ran a process built to fail: Boomi reported the error, so a pass means something', 'done' if bad else 'failed', boomi_status=f['status'])
     mem_now = sh('docker', 'stats', '--no-stream', '--format', '{{.MemUsage}}', 'atom').stdout.split('/')[0].strip()
     step('memory', 'Measured the runtime while it was up', runtime_memory=mem_now)
     return good and bad
@@ -84,6 +84,8 @@ if __name__ == '__main__':
     ok = False
     try:
         ok = bool(main())
+    except Exception as e:      # a bug in this script is a failed run on the record, never a silent one
+        step('crashed', 'The script stopped on an error', 'failed', error=f'{type(e).__name__}: {e}'[:160])
     finally:
         clean = teardown()
     ok = ok and clean

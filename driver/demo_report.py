@@ -28,7 +28,7 @@ def _post(body):
     except Exception as e: print(f'  (kumori.ai did not take the event: {type(e).__name__})', flush=True)
 
 
-def step(key, label, status='done', **facts):
+def step(key, label, status='done', /, **facts):
     """status: done | failed. facts are small plain values shown beside the step."""
     s = {'key': key, 'label': scrub(label), 'status': status, 't_s': round(time.time() - T0, 1), 'facts': {k: scrub(v) if isinstance(v, str) else v for k, v in facts.items()}}
     steps.append(s)
