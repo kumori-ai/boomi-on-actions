@@ -36,7 +36,7 @@ jobs:
       KUMORI_API_KEY: ${{ secrets.KUMORI_API_KEY }}       # may only post this demo's progress events
       FLOW_TENANT: ${{ secrets.FLOW_TENANT }}             # a public Flow app: no key, only where it lives
       FLOW_ID: ${{ secrets.FLOW_ID }}
-      BDI_TOKEN: ${{ secrets.BDI_TOKEN }}                 # a trial Data Integration account holding public status data
+      BDI_TOKEN: ${{ secrets.BDI_TOKEN }}                 # a test Data Integration account holding public status data
       BDI_ACCOUNT: ${{ secrets.BDI_ACCOUNT }}
       BDI_ENV: ${{ secrets.BDI_ENV }}
       DEMO_ARM: ${{ inputs.arm }}
