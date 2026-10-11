@@ -10,7 +10,7 @@ account is back where it started. Nothing is installed anywhere else: no VM, no 
 
 ## Watch it, or start one
 - **Start a run and watch it live:** https://kumori.ai/demo/boomi
-- **Every run ever made:** `docs/ledger/runs.jsonl`, one row per run, committed by the run itself
+- **Every run ever made:** https://kumori-ai.github.io/boomi-on-actions/ (read from `docs/ledger/runs.jsonl`, one row per run, committed by the run itself)
 - **The job logs:** the Actions tab of this repository
 
 ## What a run proves, by arm
