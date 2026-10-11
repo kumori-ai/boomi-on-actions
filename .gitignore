@@ -1,0 +1,11 @@
+# Ids and credentials never live here: the workflow reads them from repository secrets.
+ids*.json
+.env
+.env.*
+
+_oneoff/
+_antiquated*/
+*.bak
+__pycache__/
+*.py[cod]
+.DS_Store

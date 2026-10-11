@@ -1,0 +1,57 @@
+name: demo
+
+# One run of one arm, started by a visitor pressing Run on kumori.ai/demo/boomi (or by hand here).
+# Each step reports to kumori.ai as it happens, and the run leaves one row in docs/ledger/runs.jsonl.
+on:
+  workflow_dispatch:
+    inputs:
+      arm:
+        description: Which part of the Boomi platform to exercise
+        type: choice
+        options: [integration, edi]
+        default: integration
+      run_id:
+        description: The id kumori.ai gave this run (leave empty when starting by hand)
+        default: ""
+
+permissions:
+  contents: write        # the ledger row
+
+# One run at a time, across every arm: the test account has a handful of licenses, and each run's sweeper
+# removes every leftover test runtime, including a neighbor's.
+concurrency:
+  group: demo
+  cancel-in-progress: false
+
+run-name: ${{ inputs.arm }} ${{ inputs.run_id }}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      BOOMI_API_USER: ${{ secrets.BOOMI_API_USER }}
+      BOOMI_API_TOKEN: ${{ secrets.BOOMI_API_TOKEN }}     # a test-only Boomi account; it holds no production data
+      BOOMI_IDS: ${{ secrets.BOOMI_IDS }}
+      KUMORI_API_KEY: ${{ secrets.KUMORI_API_KEY }}       # may only post this demo's progress events
+      DEMO_ARM: ${{ inputs.arm }}
+      DEMO_RUN_ID: ${{ inputs.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the inputs
+        run: |
+          case "$DEMO_ARM" in integration|edi) ;; *) echo "unknown arm"; exit 1 ;; esac
+          if ! printf '%s' "$DEMO_RUN_ID" | grep -Eq '^[a-z0-9-]{0,40}$'; then echo "bad run id"; exit 1; fi
+          pip install -q requests
+      - name: Run the arm
+        run: python3 "driver/arm_${DEMO_ARM}.py"
+      - name: Close the run and write the ledger row
+        if: always()
+        run: python3 driver/close_run.py
+      - name: Commit the ledger row
+        if: always()
+        run: |
+          git config user.name "boomi-on-actions-bot"
+          git config user.email "boomi-on-actions-bot@users.noreply.github.com"
+          git add docs/ledger/runs.jsonl
+          git commit -q -F "$RUNNER_TEMP/commit_message" && git push -q || echo "nothing to commit"

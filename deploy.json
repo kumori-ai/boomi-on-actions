@@ -1,0 +1,7 @@
+{
+    "project_id": null,
+    "app_name": "boomi-on-actions",
+    "github_repo": "https://github.com/kumori-ai/boomi-on-actions.git",
+    "git_only": true,
+    "private_repo": true
+}
