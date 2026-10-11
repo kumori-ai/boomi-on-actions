@@ -31,7 +31,11 @@ def picture(run_id, must_show):
         d.get(f"{API}/{os.environ['FLOW_TENANT']}/play/kumori?flow-id={os.environ['FLOW_ID']}")
         button = lambda _: next((b for b in d.find_elements(By.XPATH, "//button | //a") if BUTTON in (b.text or '')), None)
         WebDriverWait(d, 45).until(button).click()
-        WebDriverWait(d, 45).until(lambda _: must_show in d.find_element(By.TAG_NAME, 'body').text)
+        # The app's own script restyles each row after it loads (the leading number becomes a badge, with no space
+        # after it), so the name is compared with all whitespace removed: 2026-10-11 a run timed out waiting for
+        # "01 BigQuery..." on a page that showed "01BigQuery...".
+        squash = lambda text: ''.join(text.split())
+        WebDriverWait(d, 45).until(lambda _: squash(must_show) in squash(d.find_element(By.TAG_NAME, 'body').text))
         jpeg = base64.b64decode(d.execute_cdp_cmd('Page.captureScreenshot', {'format': 'jpeg', 'quality': 72})['data'])
     finally:
         d.quit()
