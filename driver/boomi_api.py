@@ -45,14 +45,6 @@ def licenses_used():
     return {k: v.get('used') for k, v in lic.items() if isinstance(v, dict) and v.get('used')}
 
 
-def audit_of_runtime(runtime_id):
-    """What Boomi's own audit log says happened to one runtime: [(Boomi's time, action, source)], oldest first.
-    Only those three fields leave here: the log's message and user fields name the account's user."""
-    one = lambda prop, value: {'operator': 'EQUALS', 'property': prop, 'argument': [value]}
-    rows = query('AuditLog', {'QueryFilter': {'expression': {'operator': 'and', 'nestedExpression': [one('containerId', runtime_id), one('type', 'as.atom')]}}})
-    return sorted((r.get('date'), r.get('action'), r.get('source')) for r in rows if not r.get('_error') and r.get('date'))
-
-
 TERMINAL = ('COMPLETE', 'COMPLETE_WARN', 'ERROR', 'ABORTED', 'DISCARDED')
 
 

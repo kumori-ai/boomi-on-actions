@@ -27,7 +27,7 @@ a job ends, and the test account behind these runs holds no production data or c
 ## How it is kept honest
 - Every wait ends on a state (the runtime is ONLINE, the execution reached a terminal status), never on a timer.
 - Each Integration run includes a process built to fail. Boomi must report the error, or the run fails.
-- Each Integration run reports what Boomi itself recorded: the id and version Boomi gave the runtime, the id of each execution, and the audit log's own times for the runtime's creation and deletion.
+- Each Integration run reports what Boomi itself recorded: the id, version and install time Boomi gave the runtime, and the id and time of each execution.
 - Each Flow run ends with a real browser on the runner opening the app, pressing its button and committing a picture of the page to `docs/shots/flow/`, named for the run.
 - Teardown runs even when a run crashes or is cancelled, and the run fails if a test runtime is left behind.
 - Account, environment and process ids come from repository secrets and are masked in every log line.
