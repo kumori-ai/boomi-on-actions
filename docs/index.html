@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>boomi-on-actions: every run</title>
+<meta name="description" content="The record of every run: a Boomi runtime booted on a GitHub runner, used and deleted. Unofficial, by Kumori.">
+<style>
+:root{--bg:#f5f5f4;--panel:#fff;--ink:#1b1b1a;--soft:#595855;--line:#dcdcd8}
+@media (prefers-color-scheme:dark){:root{--bg:#16171a;--panel:#1f2125;--ink:#ededea;--soft:#a9a8a4;--line:#34363b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;padding:40px clamp(16px,4vw,48px) 64px}
+main{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1{font-size:clamp(26px,4vw,38px);line-height:1.15;margin:0}
+p{margin:0;max-width:70ch}.soft{color:var(--soft)}
+a{color:var(--ink);font-weight:600;text-underline-offset:3px}
+.tally{display:flex;flex-wrap:wrap;gap:8px 28px;font-variant-numeric:tabular-nums}
+.tally b{font-size:22px}
+.scroll{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+td.sum{white-space:normal;min-width:260px}
+tbody tr:last-child td{border-bottom:0}
+details{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+ol{margin:8px 0 0;padding-left:22px}li span{color:var(--soft);font-size:13.5px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Every run, as the runs themselves recorded it</h1>
+  <p>Each row is one job on a GitHub-hosted runner. An Integration run boots Boomi's official runtime container, waits for Boomi to show it ONLINE, runs a process on it, deletes it and checks nothing is left. The job writes its own row here when it ends. <span class="soft">Unofficial: not made or endorsed by Boomi or GitHub.</span></p>
+  <p><a href="https://kumori.ai/demo/boomi">Start a run and watch it live on kumori.ai</a> · <a href="https://github.com/kumori-ai/boomi-on-actions">The code</a> · <a href="https://github.com/kumori-ai/boomi-on-actions/actions">Every job log</a> · <a href="ledger/runs.jsonl">The raw ledger</a></p>
+  <div class="tally" id="tally"></div>
+  <div class="scroll"><table><thead><tr><th>Result</th><th>Arm</th><th>Started (UTC)</th><th>Seconds</th><th>Runtime ONLINE after</th><th>What happened</th><th>Proof</th></tr></thead><tbody id="rows"><tr><td colspan="7">Loading the ledger...</td></tr></tbody></table></div>
+  <details id="last" hidden><summary><b>The latest run, step by step</b></summary><ol id="steps"></ol></details>
+</main>
+<script>
+(async function () {
+  const rows = document.getElementById('rows');
+  const cell = (text, cls) => { const td = document.createElement('td'); td.textContent = text; if (cls) td.className = cls; return td; };
+  try {
+    const text = await (await fetch('ledger/runs.jsonl', { cache: 'no-store' })).text();
+    const runs = text.split('\n').filter(Boolean).map((l) => JSON.parse(l)).reverse();
+    rows.textContent = '';
+    if (!runs.length) { rows.append(document.createElement('tr')); rows.firstChild.append(cell('No runs yet.')); return; }
+    const by = {};
+    runs.forEach((r) => {
+      const t = by[r.arm] = by[r.arm] || { n: 0, ok: 0 }; t.n++; if (r.ok) t.ok++;
+      const tr = document.createElement('tr');
+      const online = (r.steps || []).find((s) => s.key === 'online');
+      const a = document.createElement('a'); a.href = r.github_run_url; a.textContent = 'job log';
+      const proof = document.createElement('td'); proof.append(a);
+      tr.append(cell(r.ok ? '✓ Passed' : '✕ Failed'), cell(r.arm), cell((r.started || '').replace('T', ' ').replace('Z', '')), cell(r.seconds == null ? '' : String(r.seconds)),
+        cell(online && online.facts && online.facts.seconds_after_start != null ? online.facts.seconds_after_start + ' s' : ''), cell(r.summary || '', 'sum'), proof);
+      rows.append(tr);
+    });
+    const tally = document.getElementById('tally');
+    Object.entries(by).forEach(([arm, t]) => { const s = document.createElement('span'); const b = document.createElement('b'); b.textContent = `${t.ok} of ${t.n}`; s.append(b, ` ${arm} runs passed`); tally.append(s); });
+    const last = runs[0];
+    if (last.steps && last.steps.length) {
+      document.getElementById('last').hidden = false;
+      last.steps.forEach((s) => {
+        const li = document.createElement('li'); const f = document.createElement('span');
+        f.textContent = ' ' + Object.entries(s.facts || {}).filter(([, v]) => v !== null).map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v}`).concat(`at ${s.t_s} s`).join(' · ');
+        li.append((s.status === 'failed' ? '✕ ' : '✓ ') + s.label, f); document.getElementById('steps').append(li);
+      });
+    }
+  } catch (e) {
+    rows.textContent = ''; const tr = document.createElement('tr'); tr.append(cell('The ledger could not be read. Open the raw ledger link above.')); rows.append(tr);
+  }
+})();
+</script>
+</body>
+</html>
