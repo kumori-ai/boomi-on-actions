@@ -1,0 +1,25 @@
+{
+  "row": "bdi_lifecycle_from_runner",
+  "as_of": "20261010T211521Z",
+  "run_id": 38086765309,
+  "steps": {
+    "bdi_run_seconds": 94,
+    "bdi_units": 0.5,
+    "bdi_lifecycle_seconds": 125
+  },
+  "observed": {
+    "copy": "HTTP 201",
+    "read_as_document": "HTTP 200, 3652 bytes",
+    "update_from_document": "HTTP 200",
+    "disable": "HTTP 204",
+    "activate": "HTTP 202",
+    "renamed_copy_listed": true,
+    "run": "HTTP 202, succeeded after 94 s, 0.5 units",
+    "delete": "HTTP 200",
+    "copies_left": 0
+  },
+  "verdict": {
+    "every_lifecycle_step_held": true,
+    "no_test_copy_left_behind": true
+  }
+}

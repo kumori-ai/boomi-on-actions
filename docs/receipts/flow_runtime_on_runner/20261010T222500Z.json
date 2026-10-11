@@ -1,0 +1,22 @@
+{
+  "row": "flow_runtime_on_runner",
+  "as_of": "20261010T222500Z",
+  "method": "Read Flow's composer script for the calls its Local Runtimes screen makes, then tried them with the tenant API keys. Separately, signed the pipeline user in to Flow with a headless browser.",
+  "observed": {
+    "create_call_found_in_the_composer": "POST /api/admin/1/organization/runtimes, response carries installationToken",
+    "GET /api/admin/1/organization/runtimes": "HTTP 403 with both tenant keys",
+    "GET /api/admin/1/tenant/runtimes": "HTTP 200, 0 items",
+    "GET /api/admin/1/organization/tenants/count": 595,
+    "GET /api/admin/1/organization/users": "HTTP 403",
+    "pipeline_user_sign_in_to_flow": "refused: access_denied, User is not assigned to the client application",
+    "new_account_sign_up": "a three-step trial form behind a captcha; not attempted",
+    "create_organization_call_in_the_composer": "none: the script invites users and tenants, creates subtenants and provisions tenants, but has no call that creates an organization",
+    "platform_roles_governing_flow_access": "none in either account's role list",
+    "flow_api_key_creation": "POST /api/admin/1/users/me/keys with a signed-in session (an API call, though not one an API key can make)",
+    "decision": "skipped on 2026-10-10: needs Boomi to grant organization administrator, or to say which sign-up yields one"
+  },
+  "verdict": {
+    "install_token_is_an_api_call": true,
+    "refused_without_organization_administrator": true
+  }
+}

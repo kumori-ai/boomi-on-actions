@@ -1,0 +1,20 @@
+{
+  "row": "bdi_run_from_runner",
+  "as_of": "20261010T184020Z",
+  "run_id": 38076689078,
+  "mode": "run pipeline 01 (BigQuery public data)",
+  "steps": {
+    "bdi_run_seconds": 11,
+    "bdi_units": 0.0
+  },
+  "observed": {
+    "run_request_http": 202,
+    "pipeline_status": "failed",
+    "job_conclusion": "failure",
+    "error": "BigQuery validation failed, missing field: default_bucket",
+    "history": "all 4 runs of this pipeline in the prior 6 days failed"
+  },
+  "verdict": {
+    "a_failed_pipeline_turned_the_job_red": true
+  }
+}

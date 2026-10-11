@@ -1,0 +1,49 @@
+{
+  "row": "event_streams",
+  "as_of": "20261010T234700Z",
+  "note": "Read-only. eventStreamsProvision was not called: calling it accepts terms of use.",
+  "accounts": {
+    "main": {
+      "feature_setting": {
+        "account": {
+          "settings": {
+            "eventStreamsFeature": "DISABLED",
+            "eventStreamsTier": -1
+          }
+        }
+      },
+      "provisioned_field": [
+        "Validation error (FieldUndefined@[_entities/eventStreams]) : Field eventStreams in type Account is undefined"
+      ],
+      "topics_query": [
+        "Validation error (FieldUndefined@[eventStreamsTopics]) : Field eventStreamsTopics in type Query is undefined"
+      ],
+      "event_streams_queries_in_schema": [],
+      "event_streams_mutations_in_schema": [
+        "accountSettingsEventStreamsUpdate",
+        "eventStreamsProvision"
+      ]
+    },
+    "isolated": {
+      "feature_setting": {
+        "account": {
+          "settings": {
+            "eventStreamsFeature": "DISABLED",
+            "eventStreamsTier": -1
+          }
+        }
+      },
+      "provisioned_field": [
+        "Validation error (FieldUndefined@[_entities/eventStreams]) : Field eventStreams in type Account is undefined"
+      ],
+      "topics_query": [
+        "Validation error (FieldUndefined@[eventStreamsTopics]) : Field eventStreamsTopics in type Query is undefined"
+      ],
+      "event_streams_queries_in_schema": [],
+      "event_streams_mutations_in_schema": [
+        "accountSettingsEventStreamsUpdate",
+        "eventStreamsProvision"
+      ]
+    }
+  }
+}

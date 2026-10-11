@@ -1,0 +1,49 @@
+{
+  "row": "bdi_loading_modes",
+  "as_of": "20261010T233721Z",
+  "checks": [
+    {
+      "step": "merge on a key",
+      "ok": false,
+      "run": "failed",
+      "units": 0.0,
+      "rows_before": 1,
+      "rows_after": 1,
+      "load_time_moved": false,
+      "error": "[RVR-LTBQ-100]: Loading to BigQuery failed with the following error: Executing query: MERGE `bdi_patterns`.`test_loading_modes` AS TUSING (        select eligible_count,ok,servable,tiers_frontier,tiers_high,tiers_low,tiers_medium,tiers_tiny,tiers_unknown,captured_at        from (        select  elig"
+    },
+    {
+      "step": "append",
+      "ok": true,
+      "run": "succeeded",
+      "units": 0.5,
+      "rows_before": 1,
+      "rows_after": 2,
+      "error": null
+    },
+    {
+      "step": "schedule set by API fires a run",
+      "ok": true,
+      "definition_http": 200,
+      "run": "succeeded",
+      "units": 0.5,
+      "started_seconds_after_scheduled_minute": 24,
+      "trigger": null,
+      "schedule_removed": true
+    },
+    {
+      "step": "incremental: the start date advances by itself",
+      "ok": true,
+      "run": "succeeded",
+      "units": 0.5,
+      "start_date_before": "2026-10-02 00:00:00",
+      "start_date_after": "2026-10-10 23:47:25.270000",
+      "error": ""
+    }
+  ],
+  "credits": 1.5,
+  "cleanup": {
+    "test_copies_left": 0,
+    "pipelines_with_an_enabled_schedule": 0
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "row": "bdi_loading_modes",
+  "as_of": "20261010T233253Z",
+  "checks": [
+    {
+      "step": "overwrite, run 1",
+      "ok": true,
+      "run": "succeeded",
+      "units": 0.5,
+      "rows_in_table": 1,
+      "error": null
+    },
+    {
+      "step": "overwrite, run 2",
+      "ok": true,
+      "run": "succeeded",
+      "units": 0.5,
+      "rows_in_table": 1,
+      "error": null
+    }
+  ],
+  "credits": 1.0,
+  "cleanup": {
+    "test_copies_left": 0,
+    "pipelines_with_a_schedule": 1
+  }
+}

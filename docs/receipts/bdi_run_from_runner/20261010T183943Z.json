@@ -1,0 +1,13 @@
+{
+  "row": "bdi_run_from_runner",
+  "as_of": "20261010T183943Z",
+  "run_id": 38076664713,
+  "mode": "canary: a name that matches no pipeline",
+  "observed": {
+    "job_conclusion": "failure",
+    "message": "FAIL 0 pipelines match"
+  },
+  "verdict": {
+    "no_match_turned_the_job_red": true
+  }
+}

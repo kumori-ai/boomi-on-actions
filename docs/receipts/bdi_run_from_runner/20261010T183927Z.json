@@ -1,0 +1,16 @@
+{
+  "row": "bdi_run_from_runner",
+  "as_of": "20261010T183927Z",
+  "run_id": 38076647149,
+  "mode": "list only",
+  "steps": {
+    "list_seconds": 0.3
+  },
+  "observed": {
+    "http": 200,
+    "pipelines": 3
+  },
+  "verdict": {
+    "listed_pipelines": true
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "row": "bdi_run_from_runner",
+  "as_of": "20261010T184237Z",
+  "run_id": 38076756355,
+  "mode": "run pipeline 03 (lane status)",
+  "steps": {
+    "bdi_run_seconds": 92,
+    "bdi_units": 0.5,
+    "job_seconds": 98
+  },
+  "observed": {
+    "run_request_http": 202,
+    "pipeline_status": "succeeded",
+    "job_conclusion": "success"
+  },
+  "verdict": {
+    "ran_and_read_result": true
+  }
+}

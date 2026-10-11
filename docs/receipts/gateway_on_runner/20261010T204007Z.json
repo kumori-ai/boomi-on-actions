@@ -1,0 +1,28 @@
+{
+  "row": "gateway_on_runner",
+  "as_of": "20261010T204007Z",
+  "run_id": 38084647963,
+  "steps": {
+    "pull_seconds": 7,
+    "image_mb": 341
+  },
+  "observed": {
+    "runtime_list": [],
+    "gateway_list": [],
+    "licenses_while_registered": {},
+    "installer_messages": [
+      "[20:40:38] loop exited: container is exited after 10s",
+      "Unauthorized attempt to add a gateway atom.  <account> account does not have permission to perform API Management.",
+      "ERROR: Installation was unsuccessful. Exiting.",
+      "Unauthorized attempt to add a gateway atom.  <account> account does not have permission to perform API Management.",
+      "ERROR: Installation was unsuccessful. Exiting."
+    ],
+    "runtimes_deleted_by_sweeper": 0
+  },
+  "verdict": {
+    "image_pulled_and_install_reached_registration": true,
+    "back_to_baseline": true,
+    "refused_no_api_management_permission": true
+  },
+  "account": "isolated"
+}

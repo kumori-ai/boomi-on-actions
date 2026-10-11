@@ -1,0 +1,20 @@
+{
+  "row": "molecule_on_runner",
+  "as_of": "20261010T203407Z",
+  "run_ids": [
+    38084115862,
+    38084218338
+  ],
+  "method": "The self-contained job with boomi/molecule:release and a MOLECULE installer token, on the isolated account (0 Molecule licenses).",
+  "observed": {
+    "installer_token_for_molecule": "HTTP 200, issued",
+    "image_pulled_and_files_downloaded": true,
+    "installer_message": "Unauthorized attempt to add a molecule. The account does not have permission to install molecule atoms.",
+    "job_seconds": 21,
+    "runtimes_left": 0
+  },
+  "verdict": {
+    "install_reached_registration_on_a_runner": true,
+    "refused_for_lack_of_a_molecule_license": true
+  }
+}

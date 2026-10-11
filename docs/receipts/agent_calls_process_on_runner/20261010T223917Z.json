@@ -1,0 +1,35 @@
+{
+  "row": "agent_calls_process_on_runner",
+  "as_of": "20261010T223917Z",
+  "steps": {
+    "turn_1_seconds": 16.8
+  },
+  "observed": {
+    "tool": "updated to the new runtime",
+    "tool_install_exit": 0,
+    "agent": "updated",
+    "deploy_target": {
+      "classification": "PRODUCTION",
+      "status": "ATTACHED"
+    },
+    "turns_used": 1,
+    "agent_reply": "{\"tool_was_called\": true, \"process_status\": \"COMPLETE\", \"summary\": \"The check process has been executed successfully. Execution ID: execution-<id>-2026.10.10. Process name: [RUNNER TEST] keyless GET. Execution completed at 2026-10-10T22:39:58Z with a duration of 822 milliseconds. 1 inbound document processed, 1 outbound document generated, 0 error documents.\"}",
+    "executions_on_the_runner_runtime": {
+      "before": 0,
+      "after": 1,
+      "new": [
+        {
+          "status": "COMPLETE",
+          "type": "exec_manual",
+          "process": "[RUNNER TEST] keyless GET"
+        }
+      ]
+    },
+    "left_in_the_account": "one agent, one tool and their deployment (Agentstudio has no delete)"
+  },
+  "verdict": {
+    "agent_replied": true,
+    "process_ran_on_the_runner_because_the_agent_called_it": true,
+    "runtime_deleted_and_back_to_baseline": true
+  }
+}

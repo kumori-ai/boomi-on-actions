@@ -1,0 +1,26 @@
+{
+  "row": "bdi_schedule_by_api",
+  "as_of": "20261010T233721Z",
+  "ran_from": "laptop (needs BigQuery read access to check the table)",
+  "checks": [
+    {
+      "step": "schedule set by API fires a run",
+      "ok": true,
+      "definition_http": 200,
+      "run": "succeeded",
+      "units": 0.5,
+      "started_seconds_after_scheduled_minute": 24,
+      "trigger": null,
+      "schedule_removed": true
+    }
+  ],
+  "credits": 0.5,
+  "cleanup": {
+    "test_copies_left": 0,
+    "pipelines_with_an_enabled_schedule": 0
+  },
+  "verdict": {
+    "schedule_fired_a_run": true,
+    "schedule_removed_afterwards": true
+  }
+}

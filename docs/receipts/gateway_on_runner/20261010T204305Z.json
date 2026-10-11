@@ -1,0 +1,30 @@
+{
+  "row": "gateway_on_runner",
+  "as_of": "20261010T204305Z",
+  "run_id": 38084841251,
+  "steps": {
+    "pull_seconds": 13,
+    "image_mb": 341
+  },
+  "observed": {
+    "runtime_list": [],
+    "gateway_list": [],
+    "licenses_while_registered": {
+      "standardTest": 1
+    },
+    "installer_messages": [
+      "[20:43:37] loop exited: container is exited after 6s",
+      "Boomi Atomsphere error: class com.boomi.install.MoleculeIdAction - HTTP(500): Server Error",
+      "ERROR: Installation was unsuccessful. Exiting.",
+      "Boomi Atomsphere error: class com.boomi.install.MoleculeIdAction - HTTP(500): Server Error",
+      "ERROR: Installation was unsuccessful. Exiting."
+    ],
+    "runtimes_deleted_by_sweeper": 0
+  },
+  "verdict": {
+    "image_pulled_and_install_reached_registration": true,
+    "back_to_baseline": true,
+    "registration_answered_http_500": true
+  },
+  "account": "main"
+}
