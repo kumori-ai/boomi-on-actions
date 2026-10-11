@@ -5,14 +5,21 @@ platform shows it ONLINE, runs a deployed process on it (must COMPLETE and retur
 fail (must ERROR), then stops the container, deletes the runtime and confirms the account is back to its
 starting counts. Every wait ends on a state: readiness answers, the platform shows ONLINE, the execution reaches
 a terminal status, or the container is no longer running.
+
+It also reports what Boomi itself recorded, so a reader does not have to take this job's word: the id and version
+Boomi gave the runtime, the id and time of each execution, and the audit log's own lines for the runtime's
+creation and deletion. None of those are ours to mint.
 """
 import os, pathlib, subprocess, sys, time
 from datetime import datetime, timezone
-from boomi_api import IDS, call, licenses_used, query, run_process
+from boomi_api import IDS, audit_of_runtime, call, licenses_used, query, run_process
 from demo_report import finish, step
 from sweep_runtimes import PREFIX, sweep
 
 NAME = PREFIX + datetime.now(timezone.utc).strftime('%Y%m%dt%H%M%Sz') + '-' + os.environ.get('GITHUB_RUN_ID', 'local')[-6:]
+
+
+RUNTIME = {}     # the id Boomi gave this run's runtime, kept for the audit read after it is deleted
 
 
 def sh(*a): return subprocess.run(a, capture_output=True, text=True)
@@ -56,16 +63,18 @@ def main():
         if container() != 'running':
             return step('online', 'Boomi shows the runtime ONLINE', 'failed', container=container()) and False
         time.sleep(3)
-    step('online', 'Boomi shows the runtime ONLINE, attached to a test environment', seconds_after_start=round(time.time() - t, 1), runtime_name=NAME, licenses_in_use=sum(licenses_used().values()))
+    RUNTIME['id'] = atom['id']
+    step('online', 'Boomi shows the runtime ONLINE, attached to a test environment', seconds_after_start=round(time.time() - t, 1), runtime_name=NAME, licenses_in_use=sum(licenses_used().values()),
+         boomi_runtime_id=atom['id'], boomi_runtime_version=atom.get('currentVersion'), boomi_installed=atom.get('dateInstalled'))
 
     alive = lambda: container() == 'running'
     e = run_process(IDS['process_keyless'], atom['id'], alive)
     good = e['status'] == 'COMPLETE' and (e.get('outbound_docs') or 0) >= 1
     step('process', 'Ran a deployed process on it: it fetched a public page and returned the document', 'done' if good else 'failed',
-         boomi_status=e['status'], boomi_duration_ms=e.get('duration_ms'), documents_out=e.get('outbound_docs'))
+         boomi_status=e['status'], boomi_duration_ms=e.get('duration_ms'), documents_out=e.get('outbound_docs'), boomi_execution_id=e.get('execution_id'), boomi_executed=e.get('boomi_time'))
     f = run_process(IDS['process_failing'], atom['id'], alive)
     bad = f['status'] == 'ERROR'
-    step('canary', 'Ran a process built to fail: Boomi reported the error, so a pass means something', 'done' if bad else 'failed', boomi_status=f['status'])
+    step('canary', 'Ran a process built to fail: Boomi reported the error, so a pass means something', 'done' if bad else 'failed', boomi_status=f['status'], boomi_execution_id=f.get('execution_id'))
     mem_now = sh('docker', 'stats', '--no-stream', '--format', '{{.MemUsage}}', 'atom').stdout.split('/')[0].strip()
     step('memory', 'Measured the runtime while it was up', runtime_memory=mem_now)
     return good and bad
@@ -76,6 +85,10 @@ def teardown(before_known=True):
     deleted, refused = sweep()
     left = test_runtimes()
     step('deleted', 'Stopped the container and deleted the runtime from Boomi', 'done' if not left and not refused else 'failed', deleted=len(deleted), refused=len(refused))
+    if RUNTIME.get('id'):      # one read, reported as found: an entry the log has not written yet is said so, never waited for
+        try: seen = {action: when for when, action, _ in audit_of_runtime(RUNTIME['id'])}
+        except Exception as e: seen = {'INSTALL': f'not read: {type(e).__name__}', 'DELETE': f'not read: {type(e).__name__}'}      # the audit read never decides a run
+        step('audit', "Read Boomi's own audit log for this runtime", boomi_audit_install=seen.get('INSTALL') or 'not in the log yet', boomi_audit_delete=seen.get('DELETE') or 'not in the log yet')
     ok = step('clean', 'Nothing left behind: the account is back where it started', 'done' if not left else 'failed', test_runtimes=len(left), licenses_in_use=sum(licenses_used().values()))
     return ok and not refused
 

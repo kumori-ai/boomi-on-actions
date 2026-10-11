@@ -45,6 +45,14 @@ def licenses_used():
     return {k: v.get('used') for k, v in lic.items() if isinstance(v, dict) and v.get('used')}
 
 
+def audit_of_runtime(runtime_id):
+    """What Boomi's own audit log says happened to one runtime: [(Boomi's time, action, source)], oldest first.
+    Only those three fields leave here: the log's message and user fields name the account's user."""
+    one = lambda prop, value: {'operator': 'EQUALS', 'property': prop, 'argument': [value]}
+    rows = query('AuditLog', {'QueryFilter': {'expression': {'operator': 'and', 'nestedExpression': [one('containerId', runtime_id), one('type', 'as.atom')]}}})
+    return sorted((r.get('date'), r.get('action'), r.get('source')) for r in rows if not r.get('_error') and r.get('date'))
+
+
 TERMINAL = ('COMPLETE', 'COMPLETE_WARN', 'ERROR', 'ABORTED', 'DISCARDED')
 
 
@@ -64,6 +72,7 @@ def run_process(process_id, atom_id, alive=lambda: True):
         row = (rec.get('result') or [{}])[0] if code == 200 else {}
         if row.get('status') in TERMINAL:
             return {'status': row['status'], 'wall_s': round(time.time() - t, 1), 'duration_ms': (row.get('executionDuration') or [None, None])[1],
+                    'execution_id': row.get('executionId'), 'boomi_time': row.get('executionTime'),
                     'outbound_docs': row.get('outboundDocumentCount'), 'message': (row.get('message') or '')[:120] or None}
         if not alive():
             return {'status': 'HOST_ENDED_FIRST'}

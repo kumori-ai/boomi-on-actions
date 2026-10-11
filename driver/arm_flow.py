@@ -4,13 +4,40 @@ No credential is used: the app is public, so the runner sends only what the publ
 flow, lands on the first page, presses the app's one button, and checks the next page loaded rows. Those rows
 come from Boomi Data Integration, read live through a Boomi Integration listener, so one press exercises three
 Boomi products. Nothing is created or removed, and no credits are spent.
+
+Then a real browser on the runner opens the same app, presses the same button and saves a picture of the page it
+lands on, so the run leaves behind what the product looked like and not only numbers. The workflow commits the
+picture beside the ledger row. A picture that could not be taken is reported as such and never decides the run.
 """
-import json, os, sys, time, urllib.error, urllib.request
+import base64, hashlib, json, os, pathlib, sys, time, urllib.error, urllib.request
 from demo_report import finish, step
 
 API = 'https://us.flow-prod.boomi.com'
 HDR = {'manywhotenant': os.environ['FLOW_TENANT'], 'Content-Type': 'application/json', 'Accept': 'application/json'}
 BUTTON, PAGE = 'Ask BDI for its pipelines', 'Pipelines'
+SHOTS = pathlib.Path(__file__).resolve().parent.parent / 'docs' / 'shots' / 'flow'
+
+
+def picture(run_id, must_show):
+    """Open the public app in headless Chrome, press its button, wait until `must_show` (a pipeline name the API
+    run just read) is on the page, and save a JPEG. Returns the facts to report."""
+    from selenium import webdriver
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    opts = webdriver.ChromeOptions()
+    for a in ('--headless=new', '--window-size=1200,1000', '--no-sandbox', '--hide-scrollbars'): opts.add_argument(a)
+    d = webdriver.Chrome(options=opts)
+    try:
+        d.get(f"{API}/{os.environ['FLOW_TENANT']}/play/kumori?flow-id={os.environ['FLOW_ID']}")
+        button = lambda _: next((b for b in d.find_elements(By.XPATH, "//button | //a") if BUTTON in (b.text or '')), None)
+        WebDriverWait(d, 45).until(button).click()
+        WebDriverWait(d, 45).until(lambda _: must_show in d.find_element(By.TAG_NAME, 'body').text)
+        jpeg = base64.b64decode(d.execute_cdp_cmd('Page.captureScreenshot', {'format': 'jpeg', 'quality': 72})['data'])
+    finally:
+        d.quit()
+    SHOTS.mkdir(parents=True, exist_ok=True)
+    (SHOTS / f'{run_id}.jpg').write_bytes(jpeg)
+    return {'picture': f'docs/shots/flow/{run_id}.jpg', 'picture_kb': round(len(jpeg) / 1024), 'picture_sha256': hashlib.sha256(jpeg).hexdigest()[:16]}
 
 
 def post(path, body):
@@ -43,6 +70,10 @@ def main():
     rows = [o for d in (page_of(nxt).get('pageResponse') or {}).get('pageComponentDataResponses') or [] for o in d.get('objectData') or []]
     names = sorted(next((p['contentValue'] for p in r['properties'] if p['developerName'] == 'name'), '?') for r in rows)
     ok = step('rows', 'The page loaded live rows (zero rows would be a failure, not a pass)', 'done' if rows else 'failed', pipelines=len(rows), first=names[0][:40] if names else None)
+    if ok:
+        from demo_report import RUN_ID
+        try: step('picture', 'A browser on the runner opened the same app, pressed the button and saved what it saw', **picture(RUN_ID, names[0]))
+        except Exception as e: step('picture', 'A browser on the runner tried to save a picture of the app and could not', picture=f'not taken: {type(e).__name__}')
     return ok and step('clean', 'Nothing was created, so there is nothing to remove', total_seconds=round(time.time() - t, 1))
 
 

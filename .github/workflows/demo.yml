@@ -47,7 +47,7 @@ jobs:
         run: |
           case "$DEMO_ARM" in integration|edi|flow|apim|bdi) ;; *) echo "unknown arm"; exit 1 ;; esac
           if [[ ! "$DEMO_RUN_ID" =~ ^[a-z0-9-]{0,40}$ ]]; then echo "bad run id"; exit 1; fi
-          pip install -q requests
+          pip install -q requests selenium
       - name: Run the arm
         run: python3 "driver/arm_${DEMO_ARM}.py"
       - name: Close the run and write the ledger row
@@ -59,4 +59,5 @@ jobs:
           git config user.name "boomi-on-actions-bot"
           git config user.email "boomi-on-actions-bot@users.noreply.github.com"
           git add docs/ledger/runs.jsonl
+          if [ -d docs/shots ]; then git add docs/shots; fi
           git commit -q -F "$RUNNER_TEMP/commit_message" && git push -q || echo "nothing to commit"
